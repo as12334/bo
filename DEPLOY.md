@@ -30,11 +30,14 @@ python excel_to_html.py
    - 登录 https://dash.cloudflare.com/
    - Pages → Create a project → Connect to Git
    - 选择仓库
-   - 构建设置：
+   - **重要**：在构建设置页面：
      - Framework preset: **None**
-     - Build command: （留空）
+     - **Build command**: **完全删除，留空** ⚠️ 这是关键！
      - Build output directory: **/** 或 **.**
+     - Root directory: **/**（默认）
    - 点击 **Save and Deploy**
+   
+   ⚠️ **如果看到 wrangler 相关错误，说明 Build command 没有正确清空！**
 
 #### 方式 B：直接上传文件
 
@@ -118,16 +121,20 @@ git push
 
 ## 故障排除
 
-### ❌ 错误：Missing entry-point to Worker script
+### ❌ 错误：A compatibility_date is required / Missing entry-point
 
-**原因**：Cloudflare Pages 尝试使用 `wrangler deploy` 部署为 Worker
+**原因**：Cloudflare Pages 正在尝试使用 `wrangler deploy` 部署为 Worker
 
 **解决方法**：
 1. 进入 Cloudflare Pages 项目设置
-2. 找到 **Builds & deployments** 设置
-3. 将 **Build command** 设置为空或 `echo "No build needed"`
-4. 确保 **Build output directory** 为 `/`
-5. 保存并重新部署
+2. 点击 **Settings** → **Builds & deployments**
+3. 找到 **Build command** 字段
+4. **完全删除** Build command 中的所有内容（包括 `npx wrangler deploy`）
+5. 确保 **Build output directory** 为 `/`
+6. 点击 **Save**
+7. 重新部署
+
+**重要**：静态网站不需要任何构建命令！Build command 必须完全留空。
 
 ### 页面显示空白
 
