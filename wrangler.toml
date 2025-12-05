@@ -1,7 +1,0 @@
-# Cloudflare Pages 静态网站配置
-# 对于静态网站，Cloudflare Pages 会自动部署，不需要 wrangler.toml
-# 但如果使用 wrangler CLI，可以使用以下配置：
-
-[assets]
-directory = "."
-
