@@ -66,13 +66,21 @@ python excel_to_html.py
 
 ## 配置说明
 
-### 构建配置
+### 构建配置（⚠️ 重要）
 
 Cloudflare Pages 构建设置：
-- **Framework preset**: None（静态网站）
-- **Build command**: （留空，无需构建）
+- **Framework preset**: **None**（静态网站）
+- **Build command**: **留空** 或 `echo "No build needed"`（不要使用 `wrangler deploy`）
 - **Build output directory**: `/` 或 `.`（根目录）
 - **Root directory**: `/`（默认）
+
+### ⚠️ 常见错误修复
+
+如果遇到 "Missing entry-point" 错误：
+
+1. **检查构建命令**：确保 Build command 为空或简单的 echo 命令
+2. **不要使用 wrangler deploy**：这是用于 Workers 的，不适合静态网站
+3. **确保输出目录正确**：Build output directory 应该是 `/`
 
 ### 环境变量
 
@@ -110,11 +118,23 @@ git push
 
 ## 故障排除
 
+### ❌ 错误：Missing entry-point to Worker script
+
+**原因**：Cloudflare Pages 尝试使用 `wrangler deploy` 部署为 Worker
+
+**解决方法**：
+1. 进入 Cloudflare Pages 项目设置
+2. 找到 **Builds & deployments** 设置
+3. 将 **Build command** 设置为空或 `echo "No build needed"`
+4. 确保 **Build output directory** 为 `/`
+5. 保存并重新部署
+
 ### 页面显示空白
 
 - 检查文件编码是否为 UTF-8
 - 检查浏览器控制台是否有错误
 - 确认 `index.html` 文件完整
+- 检查文件是否在仓库根目录
 
 ### 公式不计算
 
@@ -127,6 +147,7 @@ git push
 - 检查文件大小（Cloudflare Pages 有文件大小限制）
 - 确认文件路径正确
 - 检查构建日志中的错误信息
+- **确保 Build command 为空**（这是最常见的问题）
 
 ## 性能优化建议
 

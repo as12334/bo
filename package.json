@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Excel formula converter web page",
   "scripts": {
+    "build": "echo 'Static site - no build needed'",
     "deploy": "wrangler pages deploy ."
   },
   "keywords": [

@@ -29,8 +29,13 @@
 
 2. 在 Cloudflare Pages：
    - 连接 Git 仓库
-   - 构建设置：Framework = **None**，Build output = **/**
+   - 构建设置：
+     - Framework preset: **None**
+     - **Build command**: **留空**（重要！不要使用 wrangler deploy）
+     - Build output directory: **/**
    - 点击部署
+   
+   ⚠️ **重要**：如果遇到 "Missing entry-point" 错误，请确保 Build command 为空！
 
 ### 方式 3：命令行（适合开发者）
 
@@ -63,9 +68,20 @@ python excel_to_html.py
 # 然后按照你选择的部署方式重新部署
 ```
 
+## ⚠️ 常见问题
+
+### 错误：Missing entry-point to Worker script
+
+**解决方法**：
+1. 进入 Cloudflare Pages 项目设置
+2. 找到 **Builds & deployments**
+3. 将 **Build command** 设置为**空**（不要使用 `wrangler deploy`）
+4. 保存并重新部署
+
 ## ❓ 需要帮助？
 
 查看详细文档：
 - `README.md` - 完整说明
 - `DEPLOY.md` - 详细部署指南
+- `CLOUDFLARE_PAGES_SETUP.md` - 故障排除指南
 
