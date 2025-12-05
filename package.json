@@ -1,0 +1,16 @@
+{
+  "name": "excel-to-html",
+  "version": "1.0.0",
+  "description": "Excel formula converter web page",
+  "scripts": {
+    "deploy": "wrangler pages deploy ."
+  },
+  "keywords": [
+    "excel",
+    "formula",
+    "calculator"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
