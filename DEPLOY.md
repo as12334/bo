@@ -1,170 +1,107 @@
-# Cloudflare Pages 部署指南
+# Cloudflare Pages 静态网站部署指南
 
-## 快速部署步骤
+## ✅ 正确的配置步骤
 
-### 1. 准备文件
+### 第 1 步：准备文件
 
 确保 `index.html` 文件已生成：
 ```bash
 python excel_to_html.py
 ```
 
-### 2. 选择部署方式
-
-#### 方式 A：通过 GitHub/GitLab 部署（推荐）
-
-**优点**：自动部署、版本控制、易于更新
-
-1. 在 GitHub/GitLab 创建新仓库
-2. 上传文件：
-   ```bash
-   git init
-   git add index.html README.md .gitignore
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/yourusername/your-repo.git
-   git push -u origin main
-   ```
-
-3. 在 Cloudflare Pages：
-   - 登录 https://dash.cloudflare.com/
-   - Pages → Create a project → Connect to Git
-   - 选择仓库
-   - **重要**：在构建设置页面：
-     - Framework preset: **None**
-     - **Build command**: **完全删除，留空** ⚠️ 这是关键！
-     - Build output directory: **/** 或 **.**
-     - Root directory: **/**（默认）
-   - 点击 **Save and Deploy**
-   
-   ⚠️ **如果看到 wrangler 相关错误，说明 Build command 没有正确清空！**
-
-#### 方式 B：直接上传文件
-
-**优点**：简单快速
-
-1. 登录 Cloudflare Dashboard
-2. Pages → Create a project → Upload assets
-3. 拖拽 `index.html` 文件
-4. 点击 Deploy site
-
-#### 方式 C：使用 Wrangler CLI
-
-**优点**：命令行操作，适合自动化
-
-1. 安装 Wrangler：
-   ```bash
-   npm install -g wrangler
-   ```
-
-2. 登录：
-   ```bash
-   wrangler login
-   ```
-
-3. 部署：
-   ```bash
-   wrangler pages deploy .
-   ```
-
-## 配置说明
-
-### 构建配置（⚠️ 重要）
-
-Cloudflare Pages 构建设置：
-- **Framework preset**: **None**（静态网站）
-- **Build command**: **留空** 或 `echo "No build needed"`（不要使用 `wrangler deploy`）
-- **Build output directory**: `/` 或 `.`（根目录）
-- **Root directory**: `/`（默认）
-
-### ⚠️ 常见错误修复
-
-如果遇到 "Missing entry-point" 错误：
-
-1. **检查构建命令**：确保 Build command 为空或简单的 echo 命令
-2. **不要使用 wrangler deploy**：这是用于 Workers 的，不适合静态网站
-3. **确保输出目录正确**：Build output directory 应该是 `/`
-
-### 环境变量
-
-通常不需要环境变量，因为这是一个纯静态网站。
-
-## 自定义域名
-
-部署后可以添加自定义域名：
-
-1. 在 Cloudflare Pages 项目设置中
-2. 点击 **Custom domains**
-3. 添加你的域名
-4. 按照提示配置 DNS
-
-## 更新网站
-
-### 如果使用 Git 部署：
+### 第 2 步：推送到 GitHub
 
 ```bash
-# 更新 Excel 数据
-python excel_to_html.py
-
-# 提交更改
-git add index.html
-git commit -m "Update data"
+git add index.html README.md .gitignore
+git commit -m "Deploy static site"
 git push
-
-# Cloudflare 会自动部署
 ```
 
-### 如果使用直接上传：
+### 第 3 步：在 Cloudflare Pages 中配置
 
-1. 重新运行 `python excel_to_html.py`
-2. 在 Cloudflare Pages 中重新上传 `index.html`
+1. 登录 https://dash.cloudflare.com/
+2. 进入 **Pages** → 你的项目（或创建新项目）
+3. 点击 **Settings** → **Builds & deployments**
 
-## 故障排除
+### 第 4 步：修改构建设置（关键！）
 
-### ❌ 错误：A compatibility_date is required / Missing entry-point
+找到以下设置并修改：
 
-**原因**：Cloudflare Pages 正在尝试使用 `wrangler deploy` 部署为 Worker
+```
+Framework preset: None
+Build command: （完全留空，删除所有内容）
+Build output directory: /
+Root directory: /（默认）
+```
+
+### 第 5 步：保存并部署
+
+1. 点击 **Save**
+2. 如果已有部署，点击 **Retry deployment**
+3. 或者等待下一次 Git push 自动部署
+
+## ⚠️ 常见错误修复
+
+### 错误 1：Missing entry-point / compatibility_date
+
+**原因**：Cloudflare Pages 尝试使用 `wrangler deploy`
 
 **解决方法**：
-1. 进入 Cloudflare Pages 项目设置
-2. 点击 **Settings** → **Builds & deployments**
-3. 找到 **Build command** 字段
-4. **完全删除** Build command 中的所有内容（包括 `npx wrangler deploy`）
-5. 确保 **Build output directory** 为 `/`
-6. 点击 **Save**
-7. 重新部署
+- 进入 Settings → Builds & deployments
+- 将 **Build command** 完全清空（留空）
+- 保存并重新部署
 
-**重要**：静态网站不需要任何构建命令！Build command 必须完全留空。
+### 错误 2：Build failed
 
-### 页面显示空白
+**原因**：配置了错误的构建命令
 
-- 检查文件编码是否为 UTF-8
-- 检查浏览器控制台是否有错误
-- 确认 `index.html` 文件完整
-- 检查文件是否在仓库根目录
+**解决方法**：
+- 确认 Build command 完全为空
+- 确认 Build output directory 为 `/`
 
-### 公式不计算
+## ✅ 正确的配置示例
 
-- 检查浏览器是否支持 JavaScript
-- 打开浏览器开发者工具查看错误信息
-- 确认数据格式正确
+```
+Framework preset: None
+Build command: （完全留空）
+Build output directory: /
+Root directory: /
+```
 
-### 部署失败
+## ❌ 错误的配置示例
 
-- 检查文件大小（Cloudflare Pages 有文件大小限制）
-- 确认文件路径正确
-- 检查构建日志中的错误信息
-- **确保 Build command 为空**（这是最常见的问题）
+```
+Build command: npx wrangler deploy  ← 错误！
+Build command: npm run build         ← 错误！
+Build command: wrangler deploy       ← 错误！
+```
 
-## 性能优化建议
+## 📝 验证部署
 
-1. **压缩 HTML**：可以使用工具压缩 `index.html` 文件
-2. **CDN**：Cloudflare Pages 自动使用全球 CDN
-3. **缓存**：Cloudflare 会自动缓存静态资源
+部署成功后：
+- ✅ 构建日志显示 "Success"
+- ✅ 没有 wrangler 相关错误
+- ✅ 可以访问 `.pages.dev` 域名
+- ✅ 网站功能正常
 
-## 支持
+## 🔄 更新流程
 
-如有问题，请检查：
-- [Cloudflare Pages 文档](https://developers.cloudflare.com/pages/)
-- [Wrangler CLI 文档](https://developers.cloudflare.com/workers/wrangler/)
+1. 修改 Excel 文件
+2. 运行转换脚本：
+   ```bash
+   python excel_to_html.py
+   ```
+3. 提交更改：
+   ```bash
+   git add index.html
+   git commit -m "Update data"
+   git push
+   ```
+4. Cloudflare Pages 自动部署
+
+## 💡 提示
+
+- 静态网站不需要任何构建步骤
+- Cloudflare Pages 会直接部署 `index.html` 文件
+- 确保 `index.html` 在仓库根目录
 
